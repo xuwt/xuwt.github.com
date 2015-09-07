@@ -5,7 +5,7 @@
   <subtitle><![CDATA[想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com//"/>
-  <updated>2015-07-05T11:43:34.791Z</updated>
+  <updated>2015-09-07T09:27:10.842Z</updated>
   <id>http://yoursite.com//</id>
   
   <author>
@@ -14,6 +14,99 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Ubuntu软件源]]></title>
+    <link href="http://yoursite.com/2015/09/07/ubuntu_sourcelist/"/>
+    <id>http://yoursite.com/2015/09/07/ubuntu_sourcelist/</id>
+    <published>2015-09-07T09:27:10.842Z</published>
+    <updated>2015-09-07T09:27:10.842Z</updated>
+    <content type="html"><![CDATA[<!-- [TOC]是添加目录的标签，不过hexo的md不需要手动添加，自己会自动生成，所以注释掉  -->
+<p><strong>说明：</strong></p>
+<ul>
+<li>好久没用过我的Ubuntu系统了，记得当时还是13年时候装的，装的是13.10版本，今天突然看到Docker，感觉挺好玩的，就想着学习一下，然后apt-get 就各种404，网上查了些资料，整理一下，希望以后少走弯路。</li>
+</ul>
+<h2 id="更新软件源">更新软件源</h2><h3 id="寻找软件源">寻找软件源</h3><ul>
+<li>Ubuntu软件更新源更新的站点通常都是开源镜像站点。如果你知道一个开源镜像站点，那么就可以去看它是否存在Ubuntu的镜像内容，如果存在，这个站点就可以用于Ubuntu软件更新源。</li>
+</ul>
+<p>比如清华大学的开源镜像站点为：</p>
+<blockquote>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">http:</span><span class="comment">//mirrors.tuna.tsinghua.edu.cn/</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>访问该网站可以看到存在Ubuntu的文件夹，可以用于更新。</p>
+<p>Ubuntu13.10对应的开发名称为saucy。那么可以它对应的Ubuntu更新源内容为:</p>
+<blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy main restricted universe multiverse&#10;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-security main restricted universe multiverse&#10;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-updates main restricted universe multiverse&#10;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-backports main restricted universe multiverse&#10;deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-proposed main restricted universe multiverse&#10;deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy main restricted universe multiverse&#10;deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-security main restricted universe multiverse&#10;deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-updates main restricted universe multiverse&#10;deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-backports main restricted universe multiverse&#10;deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ saucy-proposed main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>注意一般Ubuntu更新源的支持周期为18个月，即是版本发行18月后该版本的更新将不再支持，即相应软件更新源不可使用。标识为LTS的版本支持周期为5年。</p>
+<h3 id="修改软件更新源过程">修改软件更新源过程</h3><ul>
+<li>首先备份默认的更新源文件，操作前养成备份的好习惯:</li>
+</ul>
+<blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /etc/apt/sources.list /etc/apt/sources.list.bk</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>然后把新的软件源复制进去，保存:</li>
+</ul>
+<blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>然后更新Ubuntu软件源信息:</li>
+</ul>
+<blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="选择软件源">选择软件源</h3><ul>
+<li>其实也可以直接选择软件源，在软件更新器里面选择最佳服务器，可以自动选择结点最好的源，我这里选择的是阿里云的源，直接选择的话，会自动更新sources.list文件，选择之后update一下就行了。</li>
+</ul>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/ubuntu_update5.png" alt=""></p>
+</blockquote>
+<p><strong>最后说一下，更改软件源之后，一定要进行update， sudo get-apt update，进行一下更新</strong></p>
+<h3 id="软件源网站">软件源网站</h3><ul>
+<li>最后附上一个我寻找Ubuntu软件源列表的网站</li>
+</ul>
+<blockquote>
+<p> <a href="http://wiki.ubuntu.org.cn/Qref/Source" title="源列表" target="_blank" rel="external">Ubuntu的软件源列表</a></p>
+</blockquote>
+<h2 id="升级系统">升级系统</h2><ul>
+<li>其实最简单的办法就是升级系统，现在用的比较多的是14.04,14.10更新不太大，所以我就直接升级了Ubuntu系统，用起来更方便一些。</li>
+</ul>
+<h3 id="升级系统步骤">升级系统步骤</h3><ul>
+<li>打开软件更新器，可以通过Ubuntu左侧面板，进行搜索</li>
+</ul>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/ubuntu_update1.png" alt=""></p>
+</blockquote>
+<ul>
+<li>选择软件更新器的设置</li>
+</ul>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/ubuntu_update2.png" alt=""></p>
+</blockquote>
+<ul>
+<li>切换至“其他软件”，禁用或删除当前系统的所有第三方软件源</li>
+</ul>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/ubuntu_update3.png" alt=""></p>
+</blockquote>
+<ul>
+<li>切换至“更新”页面，将有新版本通知我：更改为适用任何新版本；</li>
+</ul>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/ubuntu_update4.png" alt=""></p>
+</blockquote>
+<ul>
+<li>关闭所有窗口，重新运行Ubuntu软件更新器，立即安装对应的升级更新，即可快速升级至Ubuntu 14.04平台</li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[Ubuntu软件更新源更新的站点通常都是开源镜像站点。如果你知道一个开源镜像站点，那么就可以去看它是否存在Ubuntu的镜像内容，如果存在，这个站点就可以用于Ubuntu软件更新源。]]>
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Hello World]]></title>
