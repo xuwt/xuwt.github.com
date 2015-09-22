@@ -1,0 +1,523 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Xposed模块开发 | Hexo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Xuwt">
+    
+
+    
+    <meta name="description" content="Xposed框架是一款可以在不修改APK的情况下影响程序运行（修改系统）的框架服务，通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。基于Xposed框架可以制作出许多功能强大的模块。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xposed模块开发">
+<meta property="og:url" content="http://yoursite.com/2015/09/22/xposed_bridge/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Xposed框架是一款可以在不修改APK的情况下影响程序运行（修改系统）的框架服务，通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。基于Xposed框架可以制作出许多功能强大的模块。">
+<meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/xposed_install.png">
+<meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/xposed_installer.png">
+<meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/xposed_clock.png">
+<meta property="og:updated_time" content="2015-09-22T07:59:58.466Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xposed模块开发">
+<meta name="twitter:description" content="Xposed框架是一款可以在不修改APK的情况下影响程序运行（修改系统）的框架服务，通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。基于Xposed框架可以制作出许多功能强大的模块。">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/pacman-favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/pacman-logo.svg" alt="Hexo" title="Hexo"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Hexo">Hexo</a></h1>
+				<h2 class="blog-motto">想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/09/22/xposed_bridge/" title="Xposed模块开发" itemprop="url">Xposed模块开发</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Xuwt" target="_blank" itemprop="author">Xuwt</a>
+		
+  <p class="article-time">
+    <time datetime="2015-09-22T07:59:58.466Z" itemprop="datePublished"> 发表于 2015-09-22</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-number">1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开发模块"><span class="toc-number">3.</span> <span class="toc-text">开发模块</span></a></li></ol>
+		
+		</div>
+		
+		<p><strong>说明：</strong></p>
+<ul>
+<li>Xposed框架是一款可以在不修改APK的情况下影响程序运行（修改系统）的框架服务，通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。基于Xposed框架可以制作出许多功能强大的模块。</li>
+</ul>
+<blockquote>
+<p>官网地址： <a href="http://repo.xposed.info/" target="_blank" rel="external">http://repo.xposed.info/</a><br>源码地址： <a href="https://github.com/rovo89" target="_blank" rel="external">https://github.com/rovo89</a></p>
+</blockquote>
+<h2 id="安装">安装</h2><ul>
+<li>安装XposedInstall.apk本地服务应用，我们能够在其官网的framework栏目中找到，下载并安装。</li>
+</ul>
+<blockquote>
+<p>地址为： <a href="http://repo.xposed.info/module/de.robv.android.xposed.installer" target="_blank" rel="external">http://repo.xposed.info/module/de.robv.android.xposed.installer</a></p>
+</blockquote>
+<ul>
+<li>安装好后进入XposedInstaller应用程序，会出现需要激活框架的界面，如下图所示(由于我的已经安装过，所以我这里显示的管理框架）。这里我们点击“安装/更新”就能完成框架的安装激活了。部分设备如果不支持直接写入的话，可以选择“安装方式”，修改为在Recovery模式下自动安装即可。</li>
+</ul>
+<p><strong>安装Xposed框架需要Root权限</strong><br><strong>安装Xposed框架需要Root权限</strong><br><strong>安装Xposed框架需要Root权限</strong></p>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/xposed_install.png" alt=""><br><img src="http://7rflmb.com1.z0.glb.clouddn.com/xposed_installer.png" alt=""></p>
+</blockquote>
+<h2 id="原理">原理</h2><ul>
+<li>首先说一下Android启动的过程，Android系统启动之后会有一个“Zygote”的进程，它是android运行环境的核心。每个应用都是从一份它的拷贝(“fork”)产生。这个进程在手机启动时由一个叫 /init.rc 的脚本启动。这个进程的启动是在 /system/bin/app_process 加载所需要的类和调用初始化方法后完成。具体可以参考老罗的这篇博客：</li>
+</ul>
+<blockquote>
+<p><a href="http://blog.csdn.net/luoshengyang/article/details/6768304" title="Android系统进程Zygote启动过程的源代码分析" target="_blank" rel="external">Android系统进程Zygote启动过程的源代码分析</a></p>
+</blockquote>
+<ul>
+<li><p>当你安装完框架后，一个扩展过的app_process就会被复制到 /system/bin 下。这个扩展过的启动进程会将一个额外的jar包添加到环境变量，并在特定场合调用里面的方法。比如：当虚拟机创建完成后和Zygote的main方法被调用前。并且在那个方法当中，我们已经是Zygote的一部分，而且能够在它的上下文context中活动。</p>
+</li>
+<li><p>jar包的位置是 /data/data/de.robv.android.xposed.installer/bin/XposedBridge.jar 它的<a href="https://github.com/rovo89/XposedBridge" title="源代码" target="_blank" rel="external">源代码</a>可以在这里找到。查看<a href="https://github.com/rovo89/XposedBridge/blob/master/src/de/robv/android/xposed/XposedBridge.java" title="XposedBridge" target="_blank" rel="external">XposedBridge</a>这个类，你能找到main方法。这个方法会在每个进程的最开始部分被调用。一些初始化的工作在那里完成，并且我们的模块在那里加载。</p>
+</li>
+<li><p>真正使Xpoesed有威力的就是hook方法调用。当你反编译并修改APK时，你能够在任何你想的地方直接修改/替换指令。然而，你事后需要重新编译/给APK签名，并且只能发布整个安装包。使用Xposed能让你在任何地方hook，你不需要修改程序内部的方法代码，只要在方法调用的前后注入你的代码就行了。</p>
+</li>
+<li><p>XposedBridge 有一个私有的 native 方法叫做 hookMethodNative，这个方法也在扩展后的 app_process 中被实现了。它会将方法类型转为“native”，并把方法的实现与本地的通用方法相连。这意味着，每当被hook的方法调用后，调用者不知道实际调用的是通用的方法。在这个方法中，位于 XposedBridge 的 handleHookedMethod 方法会被调用，并向方法调用传递参数、this指针以及其他东西。之后这个方法负责唤起之前方法调用注册过的回调。上述这些行为能够改变调用的参数、实例/静态变量、唤起其他方法、处理调用结果。</p>
+</li>
+</ul>
+<h2 id="开发模块">开发模块</h2><ul>
+<li><p>一个模块就是一个普通的app，只不过多了一些特殊的文件和元数据。所以我们可以创建一个新的android工程，不需要创建Activity，因为我们的修改不需要任何用户界面。下面通过一个官方的例子来了解一下开发模块的步骤：</p>
+</li>
+<li><p>修改Manifest文件</p>
+</li>
+</ul>
+<blockquote>
+<p>Xposed Installer的模块列表搜寻所有有一种特殊元数据标记的应用程序。你可以到 AndroidManifest.xml中添加Meta Data数据，如下面的XML文件：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> &lt;application</span><br><span class="line">    android:<span class="variable">icon=</span><span class="string">"@drawable/ic_launcher"</span></span><br><span class="line">    android:<span class="variable">label=</span><span class="string">"@string/app_name"</span> &gt;</span><br><span class="line">    &lt;meta-data</span><br><span class="line">        android:<span class="variable">name=</span><span class="string">"xposedmodule"</span></span><br><span class="line">        android:<span class="variable">value=</span><span class="string">"true"</span> /&gt;</span><br><span class="line">    &lt;meta-data</span><br><span class="line">        android:<span class="variable">name=</span><span class="string">"xposeddescription"</span></span><br><span class="line">        android:<span class="variable">value=</span><span class="string">"Easy example which makes the status bar clock red and adds a smiley"</span> /&gt;</span><br><span class="line">    &lt;meta-data</span><br><span class="line">        android:<span class="variable">name=</span><span class="string">"xposedminversion"</span></span><br><span class="line">        android:<span class="variable">value=</span><span class="string">"30"</span> /&gt;</span><br><span class="line">&lt;/application&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>添加Jar包</li>
+</ul>
+<blockquote>
+<p>首先你需要下载 XposedBridgeApi-<version>.jar 的最新版，<a href="http://forum.xda-developers.com/xposed/xposed-api-changelog-developer-news-t2714067" title="点击" target="_blank" rel="external">点击</a>进入官网。新建一个lib文件夹，把jar包复制到lib文件夹下（注意不要直接放到libs文件夹下）</version></p>
+</blockquote>
+<p><strong>保证Jar包没有被包含（但仅仅是编译）在你编译过的APK里，否则你会得到一个IllegalAccessError错误。libs（含有s）文件夹是eclipse自动生成的，不要把API文件放在那里。</strong></p>
+<blockquote>
+<p>eclipse 在工程里 选中XposedBridgeApi-54.jar 右键–Build Path–Add to Build Path.</p>
+<p>IDEA 鼠标右键点击工程,选择Open Module Settings,在弹出的窗口中打开Dependencies选项卡.把XposedBridgeApi这个jar包后面的Scope属性改成provided.</p>
+</blockquote>
+<ul>
+<li>模块的接口实现</li>
+</ul>
+<blockquote>
+<p>模块的所有入口点都被标记为IXposedMod的子接口。这种情况下，你需要实现 IXposedHookLoadPackage 这个接口。其实它只有一个仅有一个参数的方法。这个方法向被实现的模块提供更多关于运行环境上下文的信息。比如：</p>
+</blockquote>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedClock</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>{
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>{
+        <span class="keyword">if</span> (!lpparam.packageName.equals(<span class="string">"com.android.systemui"</span>))
+            <span class="keyword">return</span>;
+
+        findAndHookMethod(<span class="string">"com.android.systemui.statusbar.policy.Clock"</span>, lpparam.classLoader, <span class="string">"updateClock"</span>, <span class="keyword">new</span> XC_MethodHook() {
+            <span class="annotation">@Override</span>
+            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>{
+                TextView tv = (TextView) param.thisObject;
+                String text = tv.getText().toString();
+                tv.setText(text + <span class="string">" :)"</span>);
+                tv.setTextColor(Color.RED);
+            }
+        });
+    }
+}
+</code></pre><ul>
+<li>配置assets文件</li>
+</ul>
+<blockquote>
+<p>声明需要加载到 XposedInstaller 的入口类,也就是提示XposedBridge哪些类包含了入口点。这项工作通过一个叫 xposed_init 的文件完成。在assets文件夹下创建一个新的名叫xposed_init的text文件。在该文件中每行包含一个类的全名。在这个例子中，它是 </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">de<span class="class">.robv</span><span class="class">.android</span><span class="class">.xposed</span><span class="class">.examples</span><span class="class">.redclock</span><span class="class">.RedClock</span> <span class="comment">//完整类名:包名+类名</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>安装运行</li>
+</ul>
+<blockquote>
+<p>到这一步就完成了简单的模块开发，保存你的文件，以Android Application的方式运行你的程序。因为这是你第一次安装它，在使用前你需要先启用。打开Xposed Installer这个app并确保你安装了xposed框架，之后切换到Modules标签，你应该能在那里找到你的app，选择框内打钩使得它可用，然后<strong>重启手机</strong>，你就会发现你开发的模块已经起作用了。我举的这个例子是官方例子，你可以直接下载运行：<br><a href="https://github.com/rovo89/XposedExamples" target="_blank" rel="external">https://github.com/rovo89/XposedExamples</a><br><img src="http://7rflmb.com1.z0.glb.clouddn.com/xposed_clock.png" alt=""></p>
+</blockquote>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2015/09/22/xposed_bridge/" data-title="Xposed模块开发 | Hexo" data-tsina="null" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/09/07/ubuntu_sourcelist/"  title="Ubuntu软件源">
+ <strong>下一篇：</strong><br/> 
+ <span>Ubuntu软件源
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="2015/09/22/xposed_bridge/" data-title="Xposed模块开发" data-url="http://yoursite.com/2015/09/22/xposed_bridge/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装"><span class="toc-number">1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理"><span class="toc-number">2.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开发模块"><span class="toc-number">3.</span> <span class="toc-text">开发模块</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://wuchong.me" target="_blank" title="Jark&#39;s Blog">Jark&#39;s Blog</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Xuwt. <br/>
+			This is my blog.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/wateray" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/xuwt" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<a href="mailto:water629@163.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2015 
+		
+		<a href="/about" target="_blank" title="Xuwt">Xuwt</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"xuwt"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

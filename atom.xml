@@ -5,7 +5,7 @@
   <subtitle><![CDATA[想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com//"/>
-  <updated>2015-09-07T09:27:10.842Z</updated>
+  <updated>2015-09-22T07:59:58.466Z</updated>
   <id>http://yoursite.com//</id>
   
   <author>
@@ -14,6 +14,112 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Xposed模块开发]]></title>
+    <link href="http://yoursite.com/2015/09/22/xposed_bridge/"/>
+    <id>http://yoursite.com/2015/09/22/xposed_bridge/</id>
+    <published>2015-09-22T07:59:58.466Z</published>
+    <updated>2015-09-22T07:59:58.466Z</updated>
+    <content type="html"><![CDATA[<p><strong>说明：</strong></p>
+<ul>
+<li>Xposed框架是一款可以在不修改APK的情况下影响程序运行（修改系统）的框架服务，通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。基于Xposed框架可以制作出许多功能强大的模块。</li>
+</ul>
+<blockquote>
+<p>官网地址： <a href="http://repo.xposed.info/" target="_blank" rel="external">http://repo.xposed.info/</a><br>源码地址： <a href="https://github.com/rovo89" target="_blank" rel="external">https://github.com/rovo89</a></p>
+</blockquote>
+<h2 id="安装">安装</h2><ul>
+<li>安装XposedInstall.apk本地服务应用，我们能够在其官网的framework栏目中找到，下载并安装。</li>
+</ul>
+<blockquote>
+<p>地址为： <a href="http://repo.xposed.info/module/de.robv.android.xposed.installer" target="_blank" rel="external">http://repo.xposed.info/module/de.robv.android.xposed.installer</a></p>
+</blockquote>
+<ul>
+<li>安装好后进入XposedInstaller应用程序，会出现需要激活框架的界面，如下图所示(由于我的已经安装过，所以我这里显示的管理框架）。这里我们点击“安装/更新”就能完成框架的安装激活了。部分设备如果不支持直接写入的话，可以选择“安装方式”，修改为在Recovery模式下自动安装即可。</li>
+</ul>
+<p><strong>安装Xposed框架需要Root权限</strong><br><strong>安装Xposed框架需要Root权限</strong><br><strong>安装Xposed框架需要Root权限</strong></p>
+<blockquote>
+<p><img src="http://7rflmb.com1.z0.glb.clouddn.com/xposed_install.png" alt=""><br><img src="http://7rflmb.com1.z0.glb.clouddn.com/xposed_installer.png" alt=""></p>
+</blockquote>
+<h2 id="原理">原理</h2><ul>
+<li>首先说一下Android启动的过程，Android系统启动之后会有一个“Zygote”的进程，它是android运行环境的核心。每个应用都是从一份它的拷贝(“fork”)产生。这个进程在手机启动时由一个叫 /init.rc 的脚本启动。这个进程的启动是在 /system/bin/app_process 加载所需要的类和调用初始化方法后完成。具体可以参考老罗的这篇博客：</li>
+</ul>
+<blockquote>
+<p><a href="http://blog.csdn.net/luoshengyang/article/details/6768304" title="Android系统进程Zygote启动过程的源代码分析" target="_blank" rel="external">Android系统进程Zygote启动过程的源代码分析</a></p>
+</blockquote>
+<ul>
+<li><p>当你安装完框架后，一个扩展过的app_process就会被复制到 /system/bin 下。这个扩展过的启动进程会将一个额外的jar包添加到环境变量，并在特定场合调用里面的方法。比如：当虚拟机创建完成后和Zygote的main方法被调用前。并且在那个方法当中，我们已经是Zygote的一部分，而且能够在它的上下文context中活动。</p>
+</li>
+<li><p>jar包的位置是 /data/data/de.robv.android.xposed.installer/bin/XposedBridge.jar 它的<a href="https://github.com/rovo89/XposedBridge" title="源代码" target="_blank" rel="external">源代码</a>可以在这里找到。查看<a href="https://github.com/rovo89/XposedBridge/blob/master/src/de/robv/android/xposed/XposedBridge.java" title="XposedBridge" target="_blank" rel="external">XposedBridge</a>这个类，你能找到main方法。这个方法会在每个进程的最开始部分被调用。一些初始化的工作在那里完成，并且我们的模块在那里加载。</p>
+</li>
+<li><p>真正使Xpoesed有威力的就是hook方法调用。当你反编译并修改APK时，你能够在任何你想的地方直接修改/替换指令。然而，你事后需要重新编译/给APK签名，并且只能发布整个安装包。使用Xposed能让你在任何地方hook，你不需要修改程序内部的方法代码，只要在方法调用的前后注入你的代码就行了。</p>
+</li>
+<li><p>XposedBridge 有一个私有的 native 方法叫做 hookMethodNative，这个方法也在扩展后的 app_process 中被实现了。它会将方法类型转为“native”，并把方法的实现与本地的通用方法相连。这意味着，每当被hook的方法调用后，调用者不知道实际调用的是通用的方法。在这个方法中，位于 XposedBridge 的 handleHookedMethod 方法会被调用，并向方法调用传递参数、this指针以及其他东西。之后这个方法负责唤起之前方法调用注册过的回调。上述这些行为能够改变调用的参数、实例/静态变量、唤起其他方法、处理调用结果。</p>
+</li>
+</ul>
+<h2 id="开发模块">开发模块</h2><ul>
+<li><p>一个模块就是一个普通的app，只不过多了一些特殊的文件和元数据。所以我们可以创建一个新的android工程，不需要创建Activity，因为我们的修改不需要任何用户界面。下面通过一个官方的例子来了解一下开发模块的步骤：</p>
+</li>
+<li><p>修改Manifest文件</p>
+</li>
+</ul>
+<blockquote>
+<p>Xposed Installer的模块列表搜寻所有有一种特殊元数据标记的应用程序。你可以到 AndroidManifest.xml中添加Meta Data数据，如下面的XML文件：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> &lt;application</span><br><span class="line">    android:<span class="variable">icon=</span><span class="string">"@drawable/ic_launcher"</span></span><br><span class="line">    android:<span class="variable">label=</span><span class="string">"@string/app_name"</span> &gt;</span><br><span class="line">    &lt;meta-data</span><br><span class="line">        android:<span class="variable">name=</span><span class="string">"xposedmodule"</span></span><br><span class="line">        android:<span class="variable">value=</span><span class="string">"true"</span> /&gt;</span><br><span class="line">    &lt;meta-data</span><br><span class="line">        android:<span class="variable">name=</span><span class="string">"xposeddescription"</span></span><br><span class="line">        android:<span class="variable">value=</span><span class="string">"Easy example which makes the status bar clock red and adds a smiley"</span> /&gt;</span><br><span class="line">    &lt;meta-data</span><br><span class="line">        android:<span class="variable">name=</span><span class="string">"xposedminversion"</span></span><br><span class="line">        android:<span class="variable">value=</span><span class="string">"30"</span> /&gt;</span><br><span class="line">&lt;/application&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>添加Jar包</li>
+</ul>
+<blockquote>
+<p>首先你需要下载 XposedBridgeApi-<version>.jar 的最新版，<a href="http://forum.xda-developers.com/xposed/xposed-api-changelog-developer-news-t2714067" title="点击" target="_blank" rel="external">点击</a>进入官网。新建一个lib文件夹，把jar包复制到lib文件夹下（注意不要直接放到libs文件夹下）</version></p>
+</blockquote>
+<p><strong>保证Jar包没有被包含（但仅仅是编译）在你编译过的APK里，否则你会得到一个IllegalAccessError错误。libs（含有s）文件夹是eclipse自动生成的，不要把API文件放在那里。</strong></p>
+<blockquote>
+<p>eclipse 在工程里 选中XposedBridgeApi-54.jar 右键–Build Path–Add to Build Path.</p>
+<p>IDEA 鼠标右键点击工程,选择Open Module Settings,在弹出的窗口中打开Dependencies选项卡.把XposedBridgeApi这个jar包后面的Scope属性改成provided.</p>
+</blockquote>
+<ul>
+<li>模块的接口实现</li>
+</ul>
+<blockquote>
+<p>模块的所有入口点都被标记为IXposedMod的子接口。这种情况下，你需要实现 IXposedHookLoadPackage 这个接口。其实它只有一个仅有一个参数的方法。这个方法向被实现的模块提供更多关于运行环境上下文的信息。比如：</p>
+</blockquote>
+<pre><code><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedClock</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>{
+    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>{
+        <span class="keyword">if</span> (!lpparam.packageName.equals(<span class="string">"com.android.systemui"</span>))
+            <span class="keyword">return</span>;
+
+        findAndHookMethod(<span class="string">"com.android.systemui.statusbar.policy.Clock"</span>, lpparam.classLoader, <span class="string">"updateClock"</span>, <span class="keyword">new</span> XC_MethodHook() {
+            <span class="annotation">@Override</span>
+            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>{
+                TextView tv = (TextView) param.thisObject;
+                String text = tv.getText().toString();
+                tv.setText(text + <span class="string">" :)"</span>);
+                tv.setTextColor(Color.RED);
+            }
+        });
+    }
+}
+</code></pre><ul>
+<li>配置assets文件</li>
+</ul>
+<blockquote>
+<p>声明需要加载到 XposedInstaller 的入口类,也就是提示XposedBridge哪些类包含了入口点。这项工作通过一个叫 xposed_init 的文件完成。在assets文件夹下创建一个新的名叫xposed_init的text文件。在该文件中每行包含一个类的全名。在这个例子中，它是 </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">de<span class="class">.robv</span><span class="class">.android</span><span class="class">.xposed</span><span class="class">.examples</span><span class="class">.redclock</span><span class="class">.RedClock</span> <span class="comment">//完整类名:包名+类名</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>安装运行</li>
+</ul>
+<blockquote>
+<p>到这一步就完成了简单的模块开发，保存你的文件，以Android Application的方式运行你的程序。因为这是你第一次安装它，在使用前你需要先启用。打开Xposed Installer这个app并确保你安装了xposed框架，之后切换到Modules标签，你应该能在那里找到你的app，选择框内打钩使得它可用，然后<strong>重启手机</strong>，你就会发现你开发的模块已经起作用了。我举的这个例子是官方例子，你可以直接下载运行：<br><a href="https://github.com/rovo89/XposedExamples" target="_blank" rel="external">https://github.com/rovo89/XposedExamples</a><br><img src="http://7rflmb.com1.z0.glb.clouddn.com/xposed_clock.png" alt=""></p>
+</blockquote>
+]]></content>
+    <summary type="html">
+    <![CDATA[Xposed框架是一款可以在不修改APK的情况下影响程序运行（修改系统）的框架服务，通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。基于Xposed框架可以制作出许多功能强大的模块。]]>
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Ubuntu软件源]]></title>
