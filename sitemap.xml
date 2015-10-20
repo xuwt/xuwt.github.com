@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2015/10/20/domain_check/</loc>
+    <lastmod>2015-10-20T03:51:28.888Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2015/09/22/xposed_bridge/</loc>
     <lastmod>2015-09-22T07:59:58.466Z</lastmod>
   </url>
@@ -17,7 +22,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2015/07/05/hello-world/</loc>
+    <loc>http://yoursite.com/2015/10/20/hello_world/</loc>
     <lastmod>2015-07-05T11:43:34.791Z</lastmod>
   </url>
   

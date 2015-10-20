@@ -5,7 +5,7 @@
   <subtitle><![CDATA[想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com//"/>
-  <updated>2015-09-22T07:59:58.466Z</updated>
+  <updated>2015-10-20T03:51:28.888Z</updated>
   <id>http://yoursite.com//</id>
   
   <author>
@@ -14,6 +14,78 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[域名Domain注册]]></title>
+    <link href="http://yoursite.com/2015/10/20/domain_check/"/>
+    <id>http://yoursite.com/2015/10/20/domain_check/</id>
+    <published>2015-10-20T03:51:28.888Z</published>
+    <updated>2015-10-20T03:51:28.888Z</updated>
+    <content type="html"><![CDATA[<p><strong>说明：</strong></p>
+<ul>
+<li>想注册一个域名，但是试了好些都是已经注册过了，估计现在比较短的3到6位的域名已经很难找到了，要想一个一个手动输入判断太麻烦了因此就写了一个python脚本来完成这个事情，把未注册的写到文本文件中，最后再挑选。</li>
+</ul>
+<h2 id="抓取URL请求">抓取URL请求</h2><ul>
+<li>首先要分析万网查询的接口，打开<a href="http://wanwang.aliyun.com/domain/searchresult/" title="万网查询" target="_blank" rel="external">万网查询</a>，打开chrome的开发者工具（ctrl + shift + i），随便输入一个域名，点击查询，选择Network选项，如图：</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/domain_network.png" alt="network" title="network"></p>
+</blockquote>
+<ul>
+<li>可以看到Name列有好多get请求，看前缀大概可以明白是什么意思，checkremmend是查询推荐的域名，checkdomain就是我们需要检查域名是否存在的请求了，不过这个列表有好多，点开第一个，可以看到如下图：</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/domain_com.png" alt="com" title="com"></p>
+</blockquote>
+<ul>
+<li>这个是.com请求，那可以设想下面就是.cn了，点开下面的一看还真是，这样分析就基本明朗了。</li>
+</ul>
+<h2 id="模拟请求">模拟请求</h2><ul>
+<li>利用python模拟请求上图中的RequestURL就可以了，但是请求失败，看了下RequestHeader，有个Referer，试了下，就可以请求成功了。</li>
+</ul>
+<blockquote>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jQuery111106684873232152313_1445225493501(&#123;<span class="string">"module"</span>:[&#123;<span class="string">"avail"</span>:<span class="number">0</span>,<span class="string">"name"</span>:<span class="string">"aklc.com"</span>,<span class="string">"reason"</span>:<span class="string">"Domain exists"</span>,<span class="string">"tld"</span>:<span class="string">"com"</span>&#125;],<span class="string">"success"</span>:<span class="string">"true"</span>&#125;);<span class="string">aklc :</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>接下来只要用正则匹配拿到avail的值做一下判断就行了，是1的话，就把这个domain保存到txt文件中，具体代码在python文件中写的有，代码比较简单，不多说了。</li>
+</ul>
+<p><strong>注意</strong></p>
+<ul>
+<li>进行了多次测试发现，阿里那边会限制请求，也就是请求只能当天用第二天就不能用了，如果请求不能用的话，就自己按我的方法重新抓一下URL，更改一下代码里面的请求URL的前缀和后缀就可以了。</li>
+</ul>
+<h2 id="Python代码：">Python代码：</h2><blockquote>
+<p> <a href="https://github.com/xuwt/Python_Project/blob/master/mywork/searchdomain.py" target="_blank" rel="external">https://github.com/xuwt/Python_Project/blob/master/mywork/searchdomain.py</a></p>
+</blockquote>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><strong>说明：</strong></p>
+<ul>
+<li>想注册一个域名，但是试了好些都是已经注册过了，估计现在比较短的3到6位的域名已经很难找到了，要想一个一个手动输入判断太麻烦了因此就写了一个python脚本来完成这个事情，把未注册的写到文本文件中，最后再挑选]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <link href="http://yoursite.com/2015/10/20/hello_world/"/>
+    <id>http://yoursite.com/2015/10/20/hello_world/</id>
+    <published>2015-10-20T03:44:43.185Z</published>
+    <updated>2015-07-05T11:43:34.791Z</updated>
+    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Xposed模块开发]]></title>
@@ -210,28 +282,6 @@
     <summary type="html">
     <![CDATA[Ubuntu软件更新源更新的站点通常都是开源镜像站点。如果你知道一个开源镜像站点，那么就可以去看它是否存在Ubuntu的镜像内容，如果存在，这个站点就可以用于Ubuntu软件更新源。]]>
     
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <link href="http://yoursite.com/2015/07/05/hello-world/"/>
-    <id>http://yoursite.com/2015/07/05/hello-world/</id>
-    <published>2015-07-05T13:30:51.035Z</published>
-    <updated>2015-07-05T11:43:34.791Z</updated>
-    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
     </summary>
     
   </entry>
