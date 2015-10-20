@@ -5,7 +5,7 @@
   <subtitle><![CDATA[想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com//"/>
-  <updated>2015-10-20T04:15:59.660Z</updated>
+  <updated>2015-10-20T04:20:07.386Z</updated>
   <id>http://yoursite.com//</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2015/10/20/domain_check/"/>
     <id>http://yoursite.com/2015/10/20/domain_check/</id>
     <published>2015-10-19T16:00:00.000Z</published>
-    <updated>2015-10-20T04:15:59.660Z</updated>
+    <updated>2015-10-20T04:20:07.386Z</updated>
     <content type="html"><![CDATA[<p><strong>说明：</strong></p>
 <ul>
 <li>想注册一个域名，但是试了好些都是已经注册过了，估计现在比较短的3到6位的域名已经很难找到了，要想一个一个手动输入判断太麻烦了因此就写了一个python脚本来完成这个事情，把未注册的写到文本文件中，最后再挑选。</li>
@@ -53,7 +53,7 @@
 <ul>
 <li>进行了多次测试发现，阿里那边会限制请求，也就是请求只能当天用第二天就不能用了，如果请求不能用的话，就自己按我的方法重新抓一下URL，更改一下代码里面的请求URL的前缀和后缀就可以了。</li>
 </ul>
-<h2 id="Python代码：">Python代码：</h2><blockquote>
+<h2 id="Python代码">Python代码</h2><blockquote>
 <p> <a href="https://github.com/xuwt/Python_Project/blob/master/mywork/searchdomain.py" target="_blank" rel="external">https://github.com/xuwt/Python_Project/blob/master/mywork/searchdomain.py</a></p>
 </blockquote>
 ]]></content>
