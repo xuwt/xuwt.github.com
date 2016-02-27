@@ -5,7 +5,7 @@
   <subtitle><![CDATA[想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com//"/>
-  <updated>2016-02-27T16:48:36.425Z</updated>
+  <updated>2016-02-27T16:59:51.427Z</updated>
   <id>http://yoursite.com//</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[使用Jenkins搭建Android持续集成（CI）]]></title>
+    <title><![CDATA[Jenkins搭建Android持续集成（CI）]]></title>
     <link href="http://yoursite.com/2016/02/21/jenkins_andnroid/"/>
     <id>http://yoursite.com/2016/02/21/jenkins_andnroid/</id>
     <published>2016-02-20T16:00:00.000Z</published>
-    <updated>2016-02-27T16:48:36.425Z</updated>
+    <updated>2016-02-27T16:59:51.427Z</updated>
     <content type="html"><![CDATA[<p><strong>说明：</strong></p>
 <ul>
 <li>在公司经常看到QA测试那个持续集成平台，感觉挺好玩的，就搜了一下这方面的相关资料，自己搭建了一个本地Jenkins的环境。整个环境都是在本地，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译生成apk。这里是整个步骤，记录一下。</li>
@@ -32,7 +32,7 @@
 <li>gradle2.10</li>
 <li>tomcat7.0</li>
 </ul>
-<h2 id="下载安装">下载安装</h2><ul>
+<h2 id="下载安装">下载安装</h2><h3 id="下载">下载</h3><ul>
 <li><p>首先安装tomcat，我安装的是tomcat7.0<a href="http://tomcat.apache.org/" title="tomcat官网" target="_blank" rel="external">官网</a>,解压开启服务，打开<a href="http://127.0.0.1:8080/" target="_blank" rel="external">http://127.0.0.1:8080/</a>测试。</p>
 </li>
 <li><p>下载jenkins,链接<a href="http://mirrors.jenkins-ci.org/war/latest/jenkins.war" target="_blank" rel="external">http://mirrors.jenkins-ci.org/war/latest/jenkins.war</a>,将下载的jenkins.war包直接放到tomcat下的webapps目录，重启tomcat,在浏览器输入<a href="http://127.0.0.1:8080/jenkins" target="_blank" rel="external">http://127.0.0.1:8080/jenkins</a>,可以看到欢迎界面</p>
@@ -41,7 +41,7 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_welcome.png" alt="welcome" title="welcome"></p>
 </blockquote>
-<ul>
+<h3 id="安装插件">安装插件</h3><ul>
 <li>点击左边的系统管理，选择管理插件：</li>
 </ul>
 <blockquote>
@@ -64,7 +64,7 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_jdk.png" alt="jdk" title="jdk"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_gradle.png" alt="gradle" title="gradle"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_email.png" alt="email" title="email"></p>
 </blockquote>
-<h2 id="配置任务">配置任务</h2><ul>
+<h2 id="配置任务">配置任务</h2><h3 id="新建工程">新建工程</h3><ul>
 <li><p>配置android工程，这里我以github上面的一个项目<a href="https://github.com/xuwt/JenkinsDemo" target="_blank" rel="external">JenkinsDemo</a>为例</p>
 </li>
 <li><p>首先新建一个任务,名称可以随便填</p>
@@ -79,14 +79,14 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_project.png" alt="project" title="project"></p>
 </blockquote>
-<ul>
+<h3 id="源码管理">源码管理</h3><ul>
 <li>源码管理这里选择git，在”Repository URL”中输入git仓库的地址：<a href="https://github.com/xuwt/JenkinsDemo.git" target="_blank" rel="external">https://github.com/xuwt/JenkinsDemo.git</a></li>
 <li>点击增加认证方式，在认证方式对话框的”Kind”栏中选择”Username with password”，即选择用户名/密码的方式进行认证。<br>点击”Add”，添加该认证方式，点击”Credentials”栏的下拉框，选择刚刚添加的认证方式：</li>
 </ul>
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_github.png" alt="github" title="github"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_source.png" alt="source" title="source"></p>
 </blockquote>
-<ul>
+<h3 id="构建设置">构建设置</h3><ul>
 <li>构建触发器，勾选”Poll SCM”。输入”H 10 <em> </em> 2”，这意味着”每周二的上午10:00”，Jenkins会自动获取服务器上最新的代码，并进行打包验证</li>
 </ul>
 <blockquote>
@@ -125,6 +125,7 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_apk.png" alt="build_apk" title="build_apk"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report.png" alt="build_report" title="build_report"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report_index.png" alt="build_report_index" title="build_report_index"></p>
 </blockquote>
+<p><strong>说明</strong></p>
 <ul>
 <li>这里我用的是匿名用户构建的，也可以用你添加的超级管理员名称作为帐号名注册一个帐号，这个帐号就拥有超级管理员权限了，这些暂时就不补充了。</li>
 <li>项目暂时部署在我自己的开发机器上，按说应该部署到服务器上，用脚本将生成的apk move到指定的目录下，测试人员每天都到这个目录下去取最新的apk。</li>
@@ -132,7 +133,7 @@
 <p><strong>参考</strong><br><a href="http://blog.csdn.net/voiceofnet/article/details/45197883" target="_blank" rel="external">http://blog.csdn.net/voiceofnet/article/details/45197883</a><br><a href="http://my.oschina.net/uboluo/blog/157483?fromerr=YRkRbjtL" target="_blank" rel="external">http://my.oschina.net/uboluo/blog/157483?fromerr=YRkRbjtL</a><br><a href="http://wangkuiwu.github.io/2015/08/07/jenkins-02/" target="_blank" rel="external">http://wangkuiwu.github.io/2015/08/07/jenkins-02/</a></p>
 ]]></content>
     <summary type="html">
-    <![CDATA[搭建Android的本地Jenkins持续集成环境，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。]]>
+    <![CDATA[搭建Android的本地Jenkins持续集成环境，在设定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。]]>
     
     </summary>
     

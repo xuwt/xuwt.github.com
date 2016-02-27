@@ -4,19 +4,19 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>使用Jenkins搭建Android持续集成（CI） | Hexo</title>
+    <title>Jenkins搭建Android持续集成（CI） | Hexo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Xuwt">
     
 
     
-    <meta name="description" content="搭建Android的本地Jenkins持续集成环境，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。">
+    <meta name="description" content="搭建Android的本地Jenkins持续集成环境，在设定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Jenkins搭建Android持续集成（CI）">
+<meta property="og:title" content="Jenkins搭建Android持续集成（CI）">
 <meta property="og:url" content="http://yoursite.com/2016/02/21/jenkins_andnroid/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="搭建Android的本地Jenkins持续集成环境，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。">
+<meta property="og:description" content="搭建Android的本地Jenkins持续集成环境，在设定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。">
 <meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_welcome.png">
 <meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_manager.png">
 <meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_warn.png">
@@ -37,10 +37,10 @@
 <meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_apk.png">
 <meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report.png">
 <meta property="og:image" content="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report_index.png">
-<meta property="og:updated_time" content="2016-02-27T16:48:36.425Z">
+<meta property="og:updated_time" content="2016-02-27T16:59:51.427Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用Jenkins搭建Android持续集成（CI）">
-<meta name="twitter:description" content="搭建Android的本地Jenkins持续集成环境，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。">
+<meta name="twitter:title" content="Jenkins搭建Android持续集成（CI）">
+<meta name="twitter:description" content="搭建Android的本地Jenkins持续集成环境，在设定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。">
 
     
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -100,7 +100,7 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2016/02/21/jenkins_andnroid/" title="使用Jenkins搭建Android持续集成（CI）" itemprop="url">使用Jenkins搭建Android持续集成（CI）</a>
+      <a href="/2016/02/21/jenkins_andnroid/" title="Jenkins搭建Android持续集成（CI）" itemprop="url">Jenkins搭建Android持续集成（CI）</a>
   </h1>
   <p class="article-author">By
        
@@ -116,7 +116,7 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载安装"><span class="toc-number">1.</span> <span class="toc-text">下载安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境配置"><span class="toc-number">2.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置任务"><span class="toc-number">3.</span> <span class="toc-text">配置任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建工程"><span class="toc-number">4.</span> <span class="toc-text">构建工程</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载安装"><span class="toc-number">1.</span> <span class="toc-text">下载安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#下载"><span class="toc-number">1.1.</span> <span class="toc-text">下载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装插件"><span class="toc-number">1.2.</span> <span class="toc-text">安装插件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境配置"><span class="toc-number">2.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置任务"><span class="toc-number">3.</span> <span class="toc-text">配置任务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新建工程"><span class="toc-number">3.1.</span> <span class="toc-text">新建工程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码管理"><span class="toc-number">3.2.</span> <span class="toc-text">源码管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构建设置"><span class="toc-number">3.3.</span> <span class="toc-text">构建设置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建工程"><span class="toc-number">4.</span> <span class="toc-text">构建工程</span></a></li></ol>
 		
 		</div>
 		
@@ -131,7 +131,7 @@
 <li>gradle2.10</li>
 <li>tomcat7.0</li>
 </ul>
-<h2 id="下载安装">下载安装</h2><ul>
+<h2 id="下载安装">下载安装</h2><h3 id="下载">下载</h3><ul>
 <li><p>首先安装tomcat，我安装的是tomcat7.0<a href="http://tomcat.apache.org/" title="tomcat官网" target="_blank" rel="external">官网</a>,解压开启服务，打开<a href="http://127.0.0.1:8080/" target="_blank" rel="external">http://127.0.0.1:8080/</a>测试。</p>
 </li>
 <li><p>下载jenkins,链接<a href="http://mirrors.jenkins-ci.org/war/latest/jenkins.war" target="_blank" rel="external">http://mirrors.jenkins-ci.org/war/latest/jenkins.war</a>,将下载的jenkins.war包直接放到tomcat下的webapps目录，重启tomcat,在浏览器输入<a href="http://127.0.0.1:8080/jenkins" target="_blank" rel="external">http://127.0.0.1:8080/jenkins</a>,可以看到欢迎界面</p>
@@ -140,7 +140,7 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_welcome.png" alt="welcome" title="welcome"></p>
 </blockquote>
-<ul>
+<h3 id="安装插件">安装插件</h3><ul>
 <li>点击左边的系统管理，选择管理插件：</li>
 </ul>
 <blockquote>
@@ -163,7 +163,7 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_jdk.png" alt="jdk" title="jdk"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_gradle.png" alt="gradle" title="gradle"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_email.png" alt="email" title="email"></p>
 </blockquote>
-<h2 id="配置任务">配置任务</h2><ul>
+<h2 id="配置任务">配置任务</h2><h3 id="新建工程">新建工程</h3><ul>
 <li><p>配置android工程，这里我以github上面的一个项目<a href="https://github.com/xuwt/JenkinsDemo" target="_blank" rel="external">JenkinsDemo</a>为例</p>
 </li>
 <li><p>首先新建一个任务,名称可以随便填</p>
@@ -178,14 +178,14 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_project.png" alt="project" title="project"></p>
 </blockquote>
-<ul>
+<h3 id="源码管理">源码管理</h3><ul>
 <li>源码管理这里选择git，在”Repository URL”中输入git仓库的地址：<a href="https://github.com/xuwt/JenkinsDemo.git" target="_blank" rel="external">https://github.com/xuwt/JenkinsDemo.git</a></li>
 <li>点击增加认证方式，在认证方式对话框的”Kind”栏中选择”Username with password”，即选择用户名/密码的方式进行认证。<br>点击”Add”，添加该认证方式，点击”Credentials”栏的下拉框，选择刚刚添加的认证方式：</li>
 </ul>
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_github.png" alt="github" title="github"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_source.png" alt="source" title="source"></p>
 </blockquote>
-<ul>
+<h3 id="构建设置">构建设置</h3><ul>
 <li>构建触发器，勾选”Poll SCM”。输入”H 10 <em> </em> 2”，这意味着”每周二的上午10:00”，Jenkins会自动获取服务器上最新的代码，并进行打包验证</li>
 </ul>
 <blockquote>
@@ -224,6 +224,7 @@
 <blockquote>
 <p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_apk.png" alt="build_apk" title="build_apk"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report.png" alt="build_report" title="build_report"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report_index.png" alt="build_report_index" title="build_report_index"></p>
 </blockquote>
+<p><strong>说明</strong></p>
 <ul>
 <li>这里我用的是匿名用户构建的，也可以用你添加的超级管理员名称作为帐号名注册一个帐号，这个帐号就拥有超级管理员权限了，这些暂时就不补充了。</li>
 <li>项目暂时部署在我自己的开发机器上，按说应该部署到服务器上，用脚本将生成的apk move到指定的目录下，测试人员每天都到这个目录下去取最新的apk。</li>
@@ -241,7 +242,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="http://yoursite.com/2016/02/21/jenkins_andnroid/" data-title="使用Jenkins搭建Android持续集成（CI） | Hexo" data-tsina="null" class="share clearfix">
+	  <div data-url="http://yoursite.com/2016/02/21/jenkins_andnroid/" data-title="Jenkins搭建Android持续集成（CI） | Hexo" data-tsina="null" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -267,7 +268,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="2016/02/21/jenkins_andnroid/" data-title="使用Jenkins搭建Android持续集成（CI）" data-url="http://yoursite.com/2016/02/21/jenkins_andnroid/"></div>
+	<div class="ds-thread" data-thread-key="2016/02/21/jenkins_andnroid/" data-title="Jenkins搭建Android持续集成（CI）" data-url="http://yoursite.com/2016/02/21/jenkins_andnroid/"></div>
 </section>
 
 
@@ -277,7 +278,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载安装"><span class="toc-number">1.</span> <span class="toc-text">下载安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境配置"><span class="toc-number">2.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置任务"><span class="toc-number">3.</span> <span class="toc-text">配置任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建工程"><span class="toc-number">4.</span> <span class="toc-text">构建工程</span></a></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#下载安装"><span class="toc-number">1.</span> <span class="toc-text">下载安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#下载"><span class="toc-number">1.1.</span> <span class="toc-text">下载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装插件"><span class="toc-number">1.2.</span> <span class="toc-text">安装插件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#环境配置"><span class="toc-number">2.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置任务"><span class="toc-number">3.</span> <span class="toc-text">配置任务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新建工程"><span class="toc-number">3.1.</span> <span class="toc-text">新建工程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码管理"><span class="toc-number">3.2.</span> <span class="toc-text">源码管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构建设置"><span class="toc-number">3.3.</span> <span class="toc-text">构建设置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构建工程"><span class="toc-number">4.</span> <span class="toc-text">构建工程</span></a></li></ol>
  
   </div>
 
