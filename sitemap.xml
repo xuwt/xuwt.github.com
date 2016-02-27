@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2016/02/21/jenkins_andnroid/</loc>
+    <lastmod>2016-02-27T16:48:36.425Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2015/10/20/domain_check/</loc>
     <lastmod>2015-10-20T04:20:07.386Z</lastmod>
   </url>

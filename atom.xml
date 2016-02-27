@@ -5,7 +5,7 @@
   <subtitle><![CDATA[想一千次，不如去做一次。华丽的跌倒，胜过无谓的徘徊。]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com//"/>
-  <updated>2015-10-20T04:20:07.386Z</updated>
+  <updated>2016-02-27T16:48:36.425Z</updated>
   <id>http://yoursite.com//</id>
   
   <author>
@@ -14,6 +14,129 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[使用Jenkins搭建Android持续集成（CI）]]></title>
+    <link href="http://yoursite.com/2016/02/21/jenkins_andnroid/"/>
+    <id>http://yoursite.com/2016/02/21/jenkins_andnroid/</id>
+    <published>2016-02-20T16:00:00.000Z</published>
+    <updated>2016-02-27T16:48:36.425Z</updated>
+    <content type="html"><![CDATA[<p><strong>说明：</strong></p>
+<ul>
+<li>在公司经常看到QA测试那个持续集成平台，感觉挺好玩的，就搜了一下这方面的相关资料，自己搭建了一个本地Jenkins的环境。整个环境都是在本地，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译生成apk。这里是整个步骤，记录一下。</li>
+</ul>
+<p><strong>软件环境：</strong></p>
+<ul>
+<li>windows8 64bit</li>
+<li>jdk1.7</li>
+<li>gradle2.10</li>
+<li>tomcat7.0</li>
+</ul>
+<h2 id="下载安装">下载安装</h2><ul>
+<li><p>首先安装tomcat，我安装的是tomcat7.0<a href="http://tomcat.apache.org/" title="tomcat官网" target="_blank" rel="external">官网</a>,解压开启服务，打开<a href="http://127.0.0.1:8080/" target="_blank" rel="external">http://127.0.0.1:8080/</a>测试。</p>
+</li>
+<li><p>下载jenkins,链接<a href="http://mirrors.jenkins-ci.org/war/latest/jenkins.war" target="_blank" rel="external">http://mirrors.jenkins-ci.org/war/latest/jenkins.war</a>,将下载的jenkins.war包直接放到tomcat下的webapps目录，重启tomcat,在浏览器输入<a href="http://127.0.0.1:8080/jenkins" target="_blank" rel="external">http://127.0.0.1:8080/jenkins</a>,可以看到欢迎界面</p>
+</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_welcome.png" alt="welcome" title="welcome"></p>
+</blockquote>
+<ul>
+<li>点击左边的系统管理，选择管理插件：</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_manager.png" alt="manager" title="manager"></p>
+<p>   如果提示ASCII的警告，可以修改tomcat的server.xml配置，在Connector 标签添加上 URIEncoding=”UTF-8”</p>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_warn.png" alt="warn" title="warn"></p>
+  <figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Connector <span class="variable">port=</span><span class="string">"8080"</span> <span class="variable">protocol=</span><span class="string">"HTTP/1.1"</span></span><br><span class="line">       <span class="variable">connectionTimeout=</span><span class="string">"20000"</span></span><br><span class="line">       <span class="variable">redirectPort=</span><span class="string">"8443"</span> <span class="variable">URIEncoding=</span><span class="string">"UTF-8"</span>/&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>安装插件，在可选插件中找到git,gradle,lint这三个插件安装，下面是我安装过的图：</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_plugins.png" alt="plugins" title="plugins"></p>
+<p>  安装慢的话，可以把插件下载下来，手动上传插件或设置代理。</p>
+</blockquote>
+<h2 id="环境配置">环境配置</h2><ul>
+<li>安装插件之后，返回到系统管理，选择系统设置，配置jdk，git，gradle，email(emial可以选择配置）。</li>
+<li>gradle需要配置环境变量（gradle的bin目录设置到path系统变量）。</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_jdk.png" alt="jdk" title="jdk"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_gradle.png" alt="gradle" title="gradle"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_email.png" alt="email" title="email"></p>
+</blockquote>
+<h2 id="配置任务">配置任务</h2><ul>
+<li><p>配置android工程，这里我以github上面的一个项目<a href="https://github.com/xuwt/JenkinsDemo" target="_blank" rel="external">JenkinsDemo</a>为例</p>
+</li>
+<li><p>首先新建一个任务,名称可以随便填</p>
+</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_newproject.png" alt="newproject" title="newproject"></p>
+</blockquote>
+<ul>
+<li>描述可以选填，高级选项配置这里可以选择使用自定义的工作空间：</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_project.png" alt="project" title="project"></p>
+</blockquote>
+<ul>
+<li>源码管理这里选择git，在”Repository URL”中输入git仓库的地址：<a href="https://github.com/xuwt/JenkinsDemo.git" target="_blank" rel="external">https://github.com/xuwt/JenkinsDemo.git</a></li>
+<li>点击增加认证方式，在认证方式对话框的”Kind”栏中选择”Username with password”，即选择用户名/密码的方式进行认证。<br>点击”Add”，添加该认证方式，点击”Credentials”栏的下拉框，选择刚刚添加的认证方式：</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_github.png" alt="github" title="github"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_source.png" alt="source" title="source"></p>
+</blockquote>
+<ul>
+<li>构建触发器，勾选”Poll SCM”。输入”H 10 <em> </em> 2”，这意味着”每周二的上午10:00”，Jenkins会自动获取服务器上最新的代码，并进行打包验证</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build.png" alt="build" title="build"></p>
+<p>  Build periodically：周期进行项目构建（它不关心源码是否发生变化）<br>  Poll SCM：定时检查源码变更（根据SCM软件的版本号），如果有更新就checkout最新code下来，然后执行构建动作。<br>  这里我选Poll SCM，（H/5 H(9-23) <em> </em> <em>）<br>  第一个参数代表的是分钟 minute，取值 0~59；<br>  第二个参数代表的是小时 hour，取值 0~23；<br>  第三个参数代表的是天 day，取值 1~31；<br>  第四个参数代表的是月 month，取值 1~12；<br>  最后一个参数代表的是星期 week，取值 0~7，0 和 7 都是表示星期天。<br>  如H/5 </em> <em> </em> * 表示的就是每5分钟检查一次源码变化。</p>
+</blockquote>
+<ul>
+<li>设置构建脚本，选择”Invoke Gradle script”，Gradle版本选择上一步在环境变量里面设置的（我这里选择的是Gradle2.4），在”Tasks”中输入”clean build”。即表示构建时，会执行命令”gradle clean build”.</li>
+<li>switch 就是 option，例如 —offline,task 是要执行的任务，例如 build, distTar。</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_gradle_script_task.png" alt="gradle_script_task" title="gradle_script_task"></p>
+</blockquote>
+<ul>
+<li>设置构建完成后自动执行的任务，这里选择”E-mail Notification”，即构建完成之后自动发送邮寄通知。</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_finish.png" alt="build_finish" title="build_finish"></p>
+</blockquote>
+<h2 id="构建工程">构建工程</h2><ul>
+<li>创建了JenkinsDemo工程之后，就会”每周二 10:00”自动从github上下载该工程并进行构建，同时我们也可以进行手动构建。</li>
+<li>返回到Jenkins的Dashboard(即首页)，然后点击”JenkinsDemo”名称右边的下拉图标弹出对话框，选择对话框中的”立即构建”开始构建。</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_start.png" alt="build_start" title="build_start"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_result.png" alt="build_result" title="build_result"></p>
+</blockquote>
+<ul>
+<li>构建进度条完成之后，刷新当前页面就可以看到是否构建成功了，上面的图是我构建成功之后的截图。如果构建失败的话，可以查看错误信息。</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_error.png" alt="build_error" title="build_error"></p>
+</blockquote>
+<ul>
+<li>构建成功之后，打开工程，可以看到apk的输出路径和构建报告。</li>
+</ul>
+<blockquote>
+<p>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_apk.png" alt="build_apk" title="build_apk"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report.png" alt="build_report" title="build_report"><br>  <img src="http://7rflmb.com1.z0.glb.clouddn.com/jenkins_build_report_index.png" alt="build_report_index" title="build_report_index"></p>
+</blockquote>
+<ul>
+<li>这里我用的是匿名用户构建的，也可以用你添加的超级管理员名称作为帐号名注册一个帐号，这个帐号就拥有超级管理员权限了，这些暂时就不补充了。</li>
+<li>项目暂时部署在我自己的开发机器上，按说应该部署到服务器上，用脚本将生成的apk move到指定的目录下，测试人员每天都到这个目录下去取最新的apk。</li>
+</ul>
+<p><strong>参考</strong><br><a href="http://blog.csdn.net/voiceofnet/article/details/45197883" target="_blank" rel="external">http://blog.csdn.net/voiceofnet/article/details/45197883</a><br><a href="http://my.oschina.net/uboluo/blog/157483?fromerr=YRkRbjtL" target="_blank" rel="external">http://my.oschina.net/uboluo/blog/157483?fromerr=YRkRbjtL</a><br><a href="http://wangkuiwu.github.io/2015/08/07/jenkins-02/" target="_blank" rel="external">http://wangkuiwu.github.io/2015/08/07/jenkins-02/</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[搭建Android的本地Jenkins持续集成环境，在规定的时间自动从github库中把最新的代码pull下来，通过Gradle命令自动编译。]]>
+    
+    </summary>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[万网域名检查]]></title>
